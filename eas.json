@@ -1,0 +1,20 @@
+{
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://api.baysart.com/api/v1.0"
+      },
+      "ios": {
+        "resourceClass": "m1-medium"
+      },
+      "autoIncrement": true
+    }
+  }
+}

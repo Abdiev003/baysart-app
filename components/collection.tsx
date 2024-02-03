@@ -11,7 +11,7 @@ interface CollectionsProps {
 
 export default function Collections({ data }: CollectionsProps) {
   return (
-    <View>
+    <View className="ml-[21px]">
       {data.length > 0 ? (
         data.map((collection) => (
           <View key={collection.id} className="pt-2 pr-5">

@@ -15,9 +15,9 @@ export default function ProductCard({ item, href = "" }: ProductCardProps) {
       href={href ? href : (`/(app)/products/${item.slug}?` as any)}
       asChild
       replace={false}
-      className="min-w-[160px] min-h-[218px] rounded-[20px] flex-grow shadow-sm"
+      className="min-w-[160px] h-[318px] rounded-[20px] flex-grow "
     >
-      <Pressable className="min-w-[160px] min-h-[218px] rounded-[20px] flex-grow">
+      <Pressable className="min-w-[160px] h-[318px] rounded-[20px] justify-between flex-grow border border-gray-300">
         <Image
           width={160}
           height={146}
@@ -25,7 +25,7 @@ export default function ProductCard({ item, href = "" }: ProductCardProps) {
             uri: item.image,
           }}
           resizeMode="contain"
-          className="w-full h-[146px] rounded-tl-[20px] rounded-tr-[20px]"
+          className="w-full h-[220px] rounded-tl-[20px] rounded-tr-[20px]"
         />
         <View className="px-5 py-5 bg-[#FFFFFFF2] shadow-card rounded-bl-[20px] rounded-br-[20px] gap-y-2">
           <NunitoBoldText
@@ -38,6 +38,7 @@ export default function ProductCard({ item, href = "" }: ProductCardProps) {
           <NunitoBoldText
             style={{
               fontSize: 14,
+              color: item.is_discount ? "green" : "black",
             }}
           >
             ₼{" "}
@@ -48,6 +49,7 @@ export default function ProductCard({ item, href = "" }: ProductCardProps) {
               <NunitoBoldText
                 style={{
                   fontSize: 14,
+                  color: "red",
                   textDecorationLine: "line-through",
                 }}
               >

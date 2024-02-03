@@ -1,6 +1,6 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
-import { Platform, Pressable } from "react-native";
+import { Platform, Pressable, TouchableOpacity } from "react-native";
 
 import Colors from "../../../constants/Colors";
 import { View } from "../../../components/Themed";
@@ -44,9 +44,9 @@ export default function TabLayout() {
                 }}
                 className="w-full flex-row px-[23px] items-center justify-between bg-white"
               >
-                <Pressable className="w-8 h-8 bg-[#574FA0] rounded-full items-center justify-center">
+                <TouchableOpacity className="w-8 h-8 bg-[#574FA0] rounded-full items-center justify-center">
                   <FontAwesome size={15} name="bars" color="white" />
-                </Pressable>
+                </TouchableOpacity>
                 <SearchInput />
                 <View className="items-center justify-center">
                   <FontAwesome size={20} name="bell" color="#574FA0" />

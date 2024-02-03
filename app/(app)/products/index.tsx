@@ -71,6 +71,7 @@ export default function ProductsScreen() {
 
   const scrollRef = useRef<ScrollView>(null);
 
+  const [isLoading, setIsLoading] = React.useState(true);
   const [products, setProducts] = React.useState<ProductItem[]>([]);
   const [productsPaginationInfo, setProductsPaginationInfo] = React.useState({
     count: 0,
@@ -81,13 +82,18 @@ export default function ProductsScreen() {
 
   React.useEffect(() => {
     setProducts([]);
-    if (collectionSlug) {
-      handleGetProductsByCollection();
-    } else if (search) {
-      handleGetProductsBySearch();
-    } else {
-      handleGetProducts();
+    async function fetchDataAsync() {
+      if (collectionSlug) {
+        await handleGetProductsByCollection();
+      } else if (search) {
+        await handleGetProductsBySearch();
+      } else {
+        await handleGetProducts();
+      }
+
+      setIsLoading(false);
     }
+    fetchDataAsync();
   }, [category, collectionSlug, search]);
 
   const handleScroll = async (
@@ -161,40 +167,57 @@ export default function ProductsScreen() {
     }
   };
 
+  if (isLoading) {
+    return (
+      <View className="w-full h-full items-center justify-center">
+        <NunitoBoldText
+          style={{
+            fontSize: 19,
+            color: "#292825",
+          }}
+        >
+          Yüklənir...
+        </NunitoBoldText>
+      </View>
+    );
+  }
+
   return (
-    <View>
-      <ScrollView
-        ref={scrollRef}
-        onScroll={handleScroll}
-        scrollEventThrottle={400}
-        contentContainerClassName="mt-8 flex-row flex-wrap gap-3.5 px-5 pb-10 h-full"
-      >
-        {products.length > 0 ? (
-          products.map((product) => (
+    <ScrollView
+    nestedScrollEnabled
+      ref={scrollRef}
+      onScroll={handleScroll}
+      className="flex-1"
+      scrollEventThrottle={400}
+      contentContainerClassName="flex-grow bg-white"
+    >
+      {products.length > 0 ? (
+        <View className="flex-row mt-8 flex-grow flex-wrap gap-3.5 px-5 pb-10">
+          {products.map((product) => (
             <ProductCard key={product.id} item={product} />
-          ))
-        ) : (
-          <View className="w-full h-full items-center justify-center">
-            <NunitoBoldText
-              style={{
-                fontSize: 19,
-                color: "#292825",
-              }}
-            >
-              Oppss!
-            </NunitoBoldText>
-            <NunitoText
-              style={{
-                textAlign: "center",
-                color: "#292825",
-                fontSize: 14,
-              }}
-            >
-              Axtardığınız məhsul tapılmadı
-            </NunitoText>
-          </View>
-        )}
-      </ScrollView>
-    </View>
+          ))}
+        </View>
+      ) : (
+        <View className="w-full h-full items-center justify-center">
+          <NunitoBoldText
+            style={{
+              fontSize: 19,
+              color: "#292825",
+            }}
+          >
+            Oppss!
+          </NunitoBoldText>
+          <NunitoText
+            style={{
+              textAlign: "center",
+              color: "#292825",
+              fontSize: 14,
+            }}
+          >
+            Axtardığınız məhsul tapılmadı
+          </NunitoText>
+        </View>
+      )}
+    </ScrollView>
   );
 }

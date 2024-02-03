@@ -129,6 +129,7 @@ export type ProductDetail = {
   store_id: number;
   store_slug: string;
   tax: number;
+  view_count: number;
   type: {
     id: number;
     name: string;

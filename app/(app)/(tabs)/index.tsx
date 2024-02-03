@@ -103,8 +103,7 @@ export default function HomeScreen() {
       className="bg-white flex-1"
       showsVerticalScrollIndicator={false}
     >
-      <Carousel data={carouselData} backArrow={false} />
-      <View className="pl-[21px]">
+      <View>
         <Categories data={categories} />
         <Collections data={collections} />
       </View>

@@ -5,6 +5,7 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
@@ -84,6 +85,7 @@ export default function ProductDetailScreen() {
   };
 
   const handleAddFavorite = async () => {
+    console.log('sec')
     if (!session) {
       alert("Məhsulu seçilmişlərə əlavə etmək üçün giriş etməlisiniz");
       return;
@@ -104,7 +106,11 @@ export default function ProductDetailScreen() {
         }
       );
 
+      console.log(response);
+
       const data = await response.json();
+
+      console.log(data);
 
       if (data.status) {
         alert("Məhsul seçilmişlərə əlavə olundu");
@@ -187,12 +193,12 @@ export default function ProductDetailScreen() {
           contentContainerClassName="pb-96"
           showsVerticalScrollIndicator={false}
         >
-          <Pressable
+          <TouchableOpacity
             onPress={handleAddFavorite}
-            className="w-[52px] h-[52px] bg-[#574FA0] items-center justify-center absolute right-[94px] top-0 rounded-full"
+            className="w-[52px] h-[52px] bg-[#574FA0] items-center justify-center absolute z-10 right-[94px] top-0 rounded-full"
           >
             <Ionicons name="heart" size={30} color="white" />
-          </Pressable>
+          </TouchableOpacity>
           <Pressable className="w-[52px] h-[52px] bg-[#574FA0] items-center justify-center absolute right-[30px] top-0 rounded-full">
             <Ionicons name="share-social" size={30} color="white" />
           </Pressable>
@@ -220,9 +226,23 @@ export default function ProductDetailScreen() {
               </NunitoLightText>
 
               <NunitoText className="text-[15px] text-[#8A8A8A]">
-                Kateqoriya :{" "}
+                Brend :{" "}
                 <NunitoBoldText className="text-[#574FA0]">
-                  {product.category?.[0]?.name}
+                  {product.brand}
+                </NunitoBoldText>
+              </NunitoText>
+
+              <NunitoText className="text-[15px] text-[#8A8A8A]">
+                Baxış sayı :{" "}
+                <NunitoBoldText className="text-[#574FA0]">
+                  {product.view_count}
+                </NunitoBoldText>
+              </NunitoText>
+
+              <NunitoText className="text-[15px] text-[#8A8A8A]">
+                Məhsul kodu :{" "}
+                <NunitoBoldText className="text-[#574FA0]">
+                  {product.sku}
                 </NunitoBoldText>
               </NunitoText>
             </View>
@@ -245,11 +265,13 @@ export default function ProductDetailScreen() {
                 <Text>Oxşar Məhsullar</Text>
                 <FlatList
                   data={relatedProducts.slice(0, 10)}
-                  numColumns={2}
                   scrollEnabled={false}
                   renderItem={({ item }) => (
                     <View
-                      style={{ width: Dimensions.get("window").width / 2 - 20 }}
+                      style={{
+                        width: Dimensions.get("window").width - 20,
+                        paddingRight: 26,
+                      }}
                       className="my-2"
                     >
                       <ProductCard item={item} />

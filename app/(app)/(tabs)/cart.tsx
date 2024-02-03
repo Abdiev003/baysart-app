@@ -110,7 +110,7 @@ export default function CartScreen() {
       <View className="flex-1 flex justify-between">
         <ScrollView
           className="flex-1 bg-white"
-          contentContainerClassName="h-full"
+          contentContainerClassName="flex-grow"
         >
           <View>
             {cart.length > 0 ? (

@@ -51,6 +51,8 @@ export default function FavoritesScreen() {
     }
   }, []);
 
+  console.log(favorites)
+
   return (
     <ScrollView className="flex-1 bg-white">
       <View className="mt-8">

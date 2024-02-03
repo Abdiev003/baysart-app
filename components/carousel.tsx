@@ -2,7 +2,6 @@ import { View, Dimensions, Image, Pressable } from "react-native";
 import React from "react";
 import CarouselRN from "react-native-reanimated-carousel";
 // @ts-ignore
-import ImageView from "react-native-image-view";
 import { ExternalLink } from "./ExternalLink";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";

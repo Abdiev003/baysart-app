@@ -12,6 +12,7 @@ interface BottomSheetCartProps {
   totalPrice: number;
   subTotalPrice: number;
   checkoutId: number;
+  setShowSheet: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export default function BottomSheetCart({
@@ -19,6 +20,7 @@ export default function BottomSheetCart({
   totalPrice,
   subTotalPrice,
   checkoutId,
+  setShowSheet,
 }: BottomSheetCartProps) {
   const pathname = usePathname();
   const { session } = useSession()!;
@@ -32,7 +34,7 @@ export default function BottomSheetCart({
   );
 
   // variables
-  const snapPoints = useMemo(() => ["90%", "100%"], []);
+  const snapPoints = useMemo(() => ["1%", "90%", "100%"], []);
 
   const handleSubmit = useCallback(async () => {
     if (selectedAddress === null) {
@@ -83,14 +85,24 @@ export default function BottomSheetCart({
         }, 3000);
       }
     } catch (error) {
-      console.log(error);
       alert("Xəta baş verdi");
+    }
+  }, []);
+
+  const handleSheetChanges = useCallback((index: number) => {
+    if (index === 0) {
+      setShowSheet(false);
     }
   }, []);
 
   return (
     <View className="flex-1 p-6">
-      <BottomSheet ref={bottomSheetRef} index={1} snapPoints={snapPoints}>
+      <BottomSheet
+        ref={bottomSheetRef}
+        onChange={handleSheetChanges}
+        index={1}
+        snapPoints={snapPoints}
+      >
         {success ? (
           <View className="flex-1 items-center justify-center">
             <NunitoBoldText className="text-[#574FA0] text-2xl">

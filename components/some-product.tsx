@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
+import { useRouter } from "expo-router";
 
 interface SomeProductProps {
   main_product_id: number;
@@ -13,17 +14,14 @@ const SomeProduct: React.FC<SomeProductProps> = ({
   color,
 }) => {
   const [variants, setVariants] = useState<any>({});
-  const navigation = useNavigation<any>();
+  const router = useRouter();
 
   useEffect(() => {
     handleGetVariants(main_product_id, color);
   }, []);
 
   const getLink = (slug: string) => {
-    navigation.navigate("ProductDetail", {
-      hideTabBar: true,
-      slug: slug,
-    });
+    router.push(`/(app)/products/${slug}/`);
   };
 
   const handleGetVariants = async (id: number, color: number) => {
@@ -34,10 +32,8 @@ const SomeProduct: React.FC<SomeProductProps> = ({
 
       const data = await response.json();
 
-      console.log(data);
-    } catch (error: any) {
-      console.log(error.response);
-    }
+      return setVariants(data);
+    } catch (error: any) {}
   };
   return (
     <View style={{ width: "100%" }}>
@@ -76,54 +72,38 @@ const SomeProduct: React.FC<SomeProductProps> = ({
           ))}
         </View>
       </View>
-      {variants?.different_color?.length > 0
-        ? (console.log(variants?.different_color),
-          (
-            <View className="mt-5">
-              <View>
-                <Text>Həmçinin mövcuddur:</Text>
+      {variants?.different_color?.length > 0 ? (
+        <View className="mt-5">
+          <View>
+            <Text>Həmçinin mövcuddur:</Text>
+          </View>
+          <View
+            style={{
+              maxWidth: "80%",
+              flexDirection: "row",
+              flexWrap: "wrap",
+            }}
+          >
+            {variants?.different_color?.map((variant: any, key: number) => (
+              <View key={key} className="image-item" style={{ padding: 3.2 }}>
+                <TouchableOpacity
+                  onPress={() => getLink(variant.slug) as any}
+                  className="flex flex-row"
+                >
+                  <Image
+                    source={{ uri: variant.image }}
+                    className="object-cover"
+                    style={{
+                      width: 80,
+                      height: 80,
+                    }}
+                  />
+                </TouchableOpacity>
               </View>
-              <View
-                className="image-grid"
-                style={{
-                  maxWidth: "80%",
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                }}
-              >
-                {variants?.different_color?.map(
-                  (variant: any) => (
-                    console.log(variant),
-                    (
-                      <View
-                        key={variant.id}
-                        className="image-item"
-                        style={{ padding: 3.2 }}
-                      >
-                        <TouchableOpacity
-                          onPress={() => getLink(variant.slug) as any}
-                          className="flex flex-row"
-                        >
-                          <Image
-                            source={{ uri: variant.image }}
-                            style={{
-                              width: 80,
-                              height: 80,
-                              maxHeight:
-                                variants.different_color.length === 1
-                                  ? 150
-                                  : "auto",
-                            }}
-                          />
-                        </TouchableOpacity>
-                      </View>
-                    )
-                  )
-                )}
-              </View>
-            </View>
-          ))
-        : null}
+            ))}
+          </View>
+        </View>
+      ) : null}
     </View>
   );
 };

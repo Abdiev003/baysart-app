@@ -15,7 +15,7 @@ export default function ProductCard({ item, href = "" }: ProductCardProps) {
       href={href ? href : (`/(app)/products/${item.slug}?` as any)}
       asChild
       replace={false}
-      className="min-w-[160px] min-h-[218px] rounded-[20px] flex-grow shadow-sm"
+      className="min-w-[160px] min-h-[218px] rounded-[20px] flex-grow shadow-none border border-slate-200"
     >
       <Pressable className="min-w-[160px] min-h-[218px] rounded-[20px] flex-grow">
         <Image

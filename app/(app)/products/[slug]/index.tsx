@@ -5,6 +5,7 @@ import {
   ScrollView,
   FlatList,
   Dimensions,
+  TouchableOpacity,
 } from "react-native";
 import React from "react";
 import { useLocalSearchParams } from "expo-router";
@@ -22,6 +23,7 @@ import {
 } from "../../../../components/StyledText";
 import SomeProduct from "../../../../components/some-product";
 import ProductCard from "../../../../components/product-card";
+import ProductIcons from "../../../../components/product-icons";
 
 async function getProduct(slug: string) {
   try {
@@ -29,20 +31,20 @@ async function getProduct(slug: string) {
       `${process.env.EXPO_PUBLIC_API_URL}/products/${slug}`
     );
     const data = await response.json();
+
     return data;
   } catch (error) {
-    console.error(error);
+    return null;
   }
-
-  return null;
 }
 
 async function getRelatedProducts(category: string) {
   try {
     const response = await fetch(
-      `${process.env.EXPO_PUBLIC_API_URL}/products?category=${category}`
+      `${process.env.EXPO_PUBLIC_API_URL}/products/related/?category=${category}`
     );
     const data = await response.json();
+
     return data;
   } catch (error) {
     console.error(error);
@@ -54,7 +56,6 @@ async function getRelatedProducts(category: string) {
 export default function ProductDetailScreen() {
   const params = useLocalSearchParams();
   const { session } = useSession()!;
-  const user = JSON.parse(session!);
 
   const bottomSheetRef = React.useRef<BottomSheet>(null);
   const snapPoints = React.useMemo(() => ["50%", "80%"], []);
@@ -65,21 +66,29 @@ export default function ProductDetailScreen() {
   );
 
   const handleGetProduct = async () => {
-    const data = await getProduct(params.slug as string);
+    try {
+      const data = await getProduct(params.slug as string);
 
-    if (data) {
-      setProduct(data);
-      handleGetRelatedProducts(data);
-    } else {
-      setProduct(null);
+      if (data) {
+        setProduct(data);
+        handleGetRelatedProducts(data);
+      } else {
+        setProduct(null);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
   const handleGetRelatedProducts = async (item: any) => {
-    const data = await getRelatedProducts(item.category[0].slug);
+    try {
+      const data = await getRelatedProducts(item.category[0].slug);
 
-    if (data && data.results.length > 0) {
-      setRelatedProducts(data.results);
+      if (data && data.length > 0) {
+        setRelatedProducts(data);
+      }
+    } catch (error) {
+      console.error(error);
     }
   };
 
@@ -90,13 +99,15 @@ export default function ProductDetailScreen() {
     }
 
     try {
+      const user = JSON.parse(session!);
+
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/products/favorite/`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.access}`,
+            Authorization: `Bearer ${user?.access}`,
           },
           body: JSON.stringify({
             product_id: product?.id,
@@ -113,7 +124,6 @@ export default function ProductDetailScreen() {
 
       alert("Məhsul seçilmişlərə əlavə olunmadı");
     } catch (error) {
-      console.log(error);
       alert("Məhsul seçilmişlərə əlavə olunmadı");
     }
   };
@@ -125,13 +135,15 @@ export default function ProductDetailScreen() {
     }
 
     try {
+      const user = JSON.parse(session!);
+
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/checkout-lines/`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${user.access}`,
+            Authorization: `Bearer ${user?.access}`,
           },
           body: JSON.stringify({
             product: product?.id,
@@ -149,7 +161,6 @@ export default function ProductDetailScreen() {
 
       alert("Məhsul səbətə əlavə olunmadı");
     } catch (error) {
-      console.log(error);
       alert("Məhsul səbətə əlavə olunmadı");
     }
   };
@@ -159,7 +170,11 @@ export default function ProductDetailScreen() {
   }, [params]);
 
   if (!product) {
-    return null;
+    return (
+      <View className="flex-1 bg-white/30 items-center justify-center">
+        <Text>Məhsul tapılmadı</Text>
+      </View>
+    );
   }
 
   return (
@@ -189,13 +204,16 @@ export default function ProductDetailScreen() {
         >
           <Pressable
             onPress={handleAddFavorite}
-            className="w-[52px] h-[52px] bg-[#574FA0] items-center justify-center absolute right-[94px] top-0 rounded-full"
+            className="w-12 h-12 bg-[#574FA0] items-center justify-center absolute right-[84px] top-0 rounded-full z-10"
           >
-            <Ionicons name="heart" size={30} color="white" />
+            <Ionicons name="heart" size={22} color="white" />
           </Pressable>
-          <Pressable className="w-[52px] h-[52px] bg-[#574FA0] items-center justify-center absolute right-[30px] top-0 rounded-full">
-            <Ionicons name="share-social" size={30} color="white" />
-          </Pressable>
+          <TouchableOpacity
+            onPress={() => {}}
+            className="w-12 h-12 bg-[#574FA0] items-center justify-center absolute right-[30px] top-0 rounded-full z-10"
+          >
+            <Ionicons name="share-social" size={22} color="white" />
+          </TouchableOpacity>
           <View className="pl-[26px] pt-3">
             <View className="flex-row items-center gap-x-3">
               <NunitoBoldText className="text-xl">
@@ -211,7 +229,7 @@ export default function ProductDetailScreen() {
               )}
             </View>
 
-            <View className="pr-[22px] gap-y-3">
+            <View className="pr-[22px] gap-y-1">
               <NunitoBoldText className="text-[15px] text-[#8A8A8A]">
                 Satıcı: {product.store_business_name}
               </NunitoBoldText>
@@ -219,18 +237,29 @@ export default function ProductDetailScreen() {
                 {product.description}
               </NunitoLightText>
 
-              <NunitoText className="text-[15px] text-[#8A8A8A]">
+              <NunitoText className="text-[13px] text-[#8A8A8A]">
                 Kateqoriya :{" "}
                 <NunitoBoldText className="text-[#574FA0]">
                   {product.category?.[0]?.name}
                 </NunitoBoldText>
               </NunitoText>
+              <NunitoText className="text-[13px] text-[#8A8A8A]">
+                Baxıldı :{" "}
+                <NunitoBoldText className="text-[#574FA0]">
+                  {product.view_count} dəfə
+                </NunitoBoldText>
+              </NunitoText>
+
+              <ProductIcons product={product} />
             </View>
 
-            <View className="border-b-[0.5px] border-[#ACA7A7] flex-row items-center justify-between mt-4 py-2 mr-[22px]">
+            <View className="flex-col border-b-[0.5px] border-[#ACA7A7] items-start justify-between mt-4 py-2 mr-[22px]">
               <NunitoMediumText className="text-[#1E3354]">
                 Məhsulun Təsviri
               </NunitoMediumText>
+              <NunitoLightText className="text-sm">
+                {product?.description}
+              </NunitoLightText>
             </View>
 
             <View className="mt-5">
@@ -240,13 +269,14 @@ export default function ProductDetailScreen() {
               />
             </View>
 
-            {relatedProducts && relatedProducts.length ? (
+            {relatedProducts && relatedProducts?.length ? (
               <View className="mt-5">
                 <Text>Oxşar Məhsullar</Text>
                 <FlatList
                   data={relatedProducts.slice(0, 10)}
                   numColumns={2}
                   scrollEnabled={false}
+                  columnWrapperClassName="gap-3"
                   renderItem={({ item }) => (
                     <View
                       style={{ width: Dimensions.get("window").width / 2 - 20 }}

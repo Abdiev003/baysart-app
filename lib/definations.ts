@@ -78,6 +78,7 @@ export type User = {
 
 export type ProductDetail = {
   id: number;
+  view_count: number;
   all_product_values: {
     attribute: string;
     id: number;

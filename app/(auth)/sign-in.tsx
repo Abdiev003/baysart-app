@@ -15,8 +15,6 @@ export default function SignInScreen() {
   const { signIn } = useSession()!;
 
   const handleSubmit = async (values: { email: string; password: string }) => {
-    console.log(values);
-
     try {
       const response = await fetch(
         `${process.env.EXPO_PUBLIC_API_URL}/accounts/login/`,
@@ -43,7 +41,7 @@ export default function SignInScreen() {
       signIn(userData);
       router.push("/(app)/(tabs)/");
     } catch (error) {
-      console.log(error);
+
       alert("Xəta baş verdi");
     }
   };

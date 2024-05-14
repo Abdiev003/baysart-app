@@ -95,7 +95,7 @@ export default function CartScreen() {
       const originalPrice = parseFloat(item.product.price);
       const discountedPrice = parseFloat(item.product.discount_price);
       const discount = originalPrice - discountedPrice;
-      return totalDiscount + discount * item.quantity;
+      return totalDiscount + discount * item.quantity || 0;
     }, 0);
   }, [cart]);
 
@@ -120,6 +120,7 @@ export default function CartScreen() {
                   item={item}
                   cart={cart}
                   setCart={setCart}
+                  user={user}
                 />
               ))
             ) : (
@@ -217,6 +218,7 @@ export default function CartScreen() {
           totalPrice={totalPrice}
           subTotalPrice={totalSubPrice}
           checkoutId={cart[0].checkout_id}
+          setShowSheet={setShowSheet}
         />
       )}
     </>
@@ -227,27 +229,28 @@ function CartItemFC({
   item,
   cart,
   setCart,
+  user,
 }: {
   item: CartItem;
   cart: CartItem[];
   setCart: React.Dispatch<React.SetStateAction<CartItem[]>>;
+  user: any;
 }) {
   const [quantity, setQuantity] = React.useState<number>(item.quantity);
 
   const handleRemoveCart = React.useCallback(async (id: number) => {
     try {
       const response = await fetch(
-        `${process.env.EXPO_PUBLIC_API_URL}/checkout-lines/${id}`,
+        `${process.env.EXPO_PUBLIC_API_URL}/checkout-lines/${id}/`,
         {
           method: "DELETE",
           headers: {
-            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAzMzk5MTUyLCJpYXQiOjE3MDMzMTI3NTIsImp0aSI6IjA1NmYyMjY4NTRjNjRhYjRiODMwZTIzODNmNjI4M2IzIiwidXNlcl9pZCI6MTMxfQ.HrZUtHMSkNc69ycJlpLlT_rx46LOnOWHdg5n531hyCk`,
+            Authorization: `Bearer ${user.access}`,
           },
         }
       );
-      const data = await response.json();
 
-      if (data) {
+      if (response.ok) {
         alert("Məhsul səbətdən silindi");
         const newCart = cart.filter((item) => item.id !== id);
         setCart(newCart);
@@ -255,7 +258,6 @@ function CartItemFC({
       }
       alert("Məhsul səbətdən silinərkən xəta baş verdi");
     } catch (error) {
-      console.error(error);
       alert("Məhsul səbətdən silinərkən xəta baş verdi");
     }
   }, []);
@@ -269,7 +271,7 @@ function CartItemFC({
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzAzMzk5MTUyLCJpYXQiOjE3MDMzMTI3NTIsImp0aSI6IjA1NmYyMjY4NTRjNjRhYjRiODMwZTIzODNmNjI4M2IzIiwidXNlcl9pZCI6MTMxfQ.HrZUtHMSkNc69ycJlpLlT_rx46LOnOWHdg5n531hyCk`,
+              Authorization: `Bearer ${user.access}`,
             },
             body: JSON.stringify({
               product: id,

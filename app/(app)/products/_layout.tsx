@@ -15,7 +15,6 @@ export default function ProductsLayout() {
         options={{
           headerLeft: () => (
             <TouchableOpacity
-              className="z-50"
               onPress={() => {
                 if (router.canGoBack()) {
                   router.back();

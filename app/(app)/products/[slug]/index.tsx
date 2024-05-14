@@ -11,7 +11,7 @@ import React from "react";
 import { useLocalSearchParams } from "expo-router";
 import Carousel from "../../../../components/carousel";
 import { ProductDetail, ProductItem } from "../../../../lib/definations";
-import BottomSheet from "@gorhom/bottom-sheet";
+import BottomSheet, { BottomSheetScrollView } from "@gorhom/bottom-sheet";
 import { Ionicons } from "@expo/vector-icons";
 import { useSession } from "../../../../providers/auth-provider";
 import {
@@ -192,13 +192,14 @@ export default function ProductDetailScreen() {
 
       <BottomSheet
         style={{
+          flex: 1,
           boxShadow: "3px 3px 18px 0px rgba(0, 0, 0, 0.25)",
         }}
         ref={bottomSheetRef}
         index={1}
         snapPoints={snapPoints}
       >
-        <ScrollView
+        <BottomSheetScrollView
           contentContainerClassName="pb-96"
           showsVerticalScrollIndicator={false}
         >
@@ -290,7 +291,7 @@ export default function ProductDetailScreen() {
               </View>
             ) : null}
           </View>
-        </ScrollView>
+        </BottomSheetScrollView>
       </BottomSheet>
       <View
         style={{
